@@ -1,0 +1,25 @@
+name: Build VCam
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile dylib
+        run: |
+          xcrun -sdk iphoneos clang -arch arm64 -dynamiclib -fobjc-arc \
+            -miphoneos-version-min=15.0 \
+            -framework Foundation -framework UIKit -framework AVFoundation \
+            -framework CoreMedia -framework CoreVideo -framework VideoToolbox \
+            -framework PhotosUI \
+            VCam.m -o VCam.dylib
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VCam-dylib
+          path: VCam.dylib
